@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import pickle  # to load a saved modelimport base64  # to handle gif encoding
 import base64
+import sklearn
 
 @st.cache_data
 def get_fvalue(val):    
