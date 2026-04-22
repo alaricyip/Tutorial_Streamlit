@@ -1,0 +1,90 @@
+# https://www.datacamp.com/tutorial/streamlit
+
+import streamlit as st
+import pandas as pd
+import numpy as np
+import pickle  # to load a saved modelimport base64  # to handle gif encoding
+import base64
+
+@st.cache_data
+def get_fvalue(val):    
+    feature_dict = {"No": 1, "Yes": 2}    
+    return feature_dict[val]
+
+def get_value(val, my_dict):    
+    return my_dict[val]
+
+# Dictionaries
+gender_dict = {"Male": 1, "Female": 2}
+edu = {"Graduate": 1, "Not Graduate": 2}
+
+app_mode = st.sidebar.selectbox(" Select",["Home","Prediction"])
+
+if app_mode == 'Home':    
+    st.title('Loan Prediction')    
+    st.image('loan_image.jpg')    
+    st.markdown('Dataset:')    
+    data = pd.read_csv('loan_dataset.csv')    
+    st.write(data.head())    
+    st.bar_chart(data[['ApplicantIncome', 'LoanAmount']].head(20))
+    
+if app_mode == 'Prediction':
+    # Sidebar inputs
+    Gender          = st.sidebar.selectbox("Gender", ["Male", "Female"])
+    Married         = st.sidebar.selectbox("Married", ["No", "Yes"])
+    Dependents      = st.sidebar.selectbox("Dependents", ["0", "1", "2", "3+"])
+    Education       = st.sidebar.selectbox("Education", ["Graduate", "Not Graduate"])
+    Self_Employed   = st.sidebar.selectbox("Self Employed", ["No", "Yes"])
+    ApplicantIncome = st.sidebar.slider("Applicant Income", 0, 10000, 0)
+    CoapplicantIncome = st.sidebar.slider("Coapplicant Income", 0.0, 10000.0, 0.0)
+    LoanAmount      = st.sidebar.slider("Loan Amount (K$)", 9.0, 700.0, 200.0)
+    Loan_Amount_Term = st.sidebar.slider("Loan Amount Term (days)", 12.0, 480.0, 120.0)
+    Credit_History  = st.sidebar.selectbox("Credit History", [1, 0])
+    Property_Area   = st.sidebar.selectbox("Property Area", ["Rural", "Urban", "Semiurban"])
+
+    # Encode dependents
+    class_0 = 1 if Dependents == "0"  else 0
+    class_1 = 1 if Dependents == "1"  else 0
+    class_2 = 1 if Dependents == "2"  else 0
+    class_3 = 1 if Dependents == "3+" else 0
+    
+    # Encode property area
+    Rural     = 1 if Property_Area == "Rural"     else 0
+    Urban     = 1 if Property_Area == "Urban"     else 0
+    Semiurban = 1 if Property_Area == "Semiurban" else 0
+    
+    feature_list = [
+        ApplicantIncome,
+        CoapplicantIncome,
+        LoanAmount,
+        Loan_Amount_Term,
+        Credit_History,
+        get_value(Gender, gender_dict),
+        get_fvalue(Married),
+        class_0, class_1, class_2, class_3,
+        get_value(Education, edu),
+        get_fvalue(Self_Employed),
+        Rural, Urban, Semiurban
+    ]
+    
+    single_sample = np.array(feature_list).reshape(1,-1)
+
+            
+    if st.button("Predict"):
+        loaded_model = pickle.load(open('model/Random_Forest.sav', 'rb'))
+        prediction = loaded_model.predict(single_sample)
+
+        # Load GIFs
+        with open("file_/6m-rain.gif", "rb") as f:
+            data_url = base64.b64encode(f.read()).decode("utf-8")
+        with open("file/green-cola-no.gif", "rb") as f:
+            data_url_no = base64.b64encode(f.read()).decode("utf-8")
+
+        if prediction[0] == 0:
+            st.error('According to our calculations, you will not get the loan.')
+            st.markdown(f'<img src="data:image/gif;base64,{data_url_no}" alt="no gif">',
+                        unsafe_allow_html=True)
+        else:
+            st.success('Congratulations! You will get the loan.')
+            st.markdown(f'<img src="data:image/gif;base64,{data_url}" alt="yes gif">',
+                        unsafe_allow_html=True)
