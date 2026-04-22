@@ -1,7 +1,0 @@
-mkdir Loan_Prediction_Random_Forest_Apr2026
-cd foldername
-touch .gitkeep  
-cd ..
-git add foldername/.gitkeep
-git commit -m "Add foldername folder"
-git push
