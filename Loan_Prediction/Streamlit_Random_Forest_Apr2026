@@ -75,9 +75,9 @@ if app_mode == 'Prediction':
         prediction = loaded_model.predict(single_sample)
 
         # Load GIFs
-        with open("file_/6m-rain.gif", "rb") as f:
+        with open("6m-rain.gif", "rb") as f:
             data_url = base64.b64encode(f.read()).decode("utf-8")
-        with open("file/green-cola-no.gif", "rb") as f:
+        with open("green-cola-no.gif", "rb") as f:
             data_url_no = base64.b64encode(f.read()).decode("utf-8")
 
         if prediction[0] == 0:
