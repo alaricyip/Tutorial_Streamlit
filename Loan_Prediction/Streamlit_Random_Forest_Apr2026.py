@@ -22,9 +22,9 @@ app_mode = st.sidebar.selectbox(" Select",["Home","Prediction"])
 
 if app_mode == 'Home':    
     st.title('Loan Prediction')    
-    st.image('loan_image.jpg')    
+    st.image('Loan_Prediction/loan_image.jpg')    
     st.markdown('Dataset:')    
-    data = pd.read_csv('loan_dataset.csv')    
+    data = pd.read_csv('Loan_Prediction/loan_dataset.csv')    
     st.write(data.head())    
     st.bar_chart(data[['ApplicantIncome', 'LoanAmount']].head(20))
     
@@ -71,13 +71,13 @@ if app_mode == 'Prediction':
 
             
     if st.button("Predict"):
-        loaded_model = pickle.load(open('model/Random_Forest.sav', 'rb'))
+        loaded_model = pickle.load(open('Loan_Prediction/model/Random_Forest.sav', 'rb'))
         prediction = loaded_model.predict(single_sample)
 
         # Load GIFs
-        with open("6m-rain.gif", "rb") as f:
+        with open("Loan_Prediction/6m-rain.gif", "rb") as f:
             data_url = base64.b64encode(f.read()).decode("utf-8")
-        with open("green-cola-no.gif", "rb") as f:
+        with open("Loan_Prediction/green-cola-no.gif", "rb") as f:
             data_url_no = base64.b64encode(f.read()).decode("utf-8")
 
         if prediction[0] == 0:
